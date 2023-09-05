@@ -1,15 +1,20 @@
 package tddmicroexercises.telemetrysystem;
 
-public class TelemetryDiagnosticControls
+
+
+public class TelemetryDiagnosticControls implements TelemetryDiagnosticControlsInterface
 {
-    private final String DiagnosticChannelConnectionString = "*111#";
-    
-    private final TelemetryClient telemetryClient;
+
+    private final TelemetryClientInterface telemetryClient;
+
+    private final ConnectionInterface connect;
     private String diagnosticInfo = "";
 
-        public TelemetryDiagnosticControls()
+
+        public TelemetryDiagnosticControls(TelemetryClientInterface telemetryClient, ConnectionInterface connect)
         {
-            telemetryClient = new TelemetryClient();
+            this.telemetryClient = telemetryClient;
+            this.connect = connect;
         }
         
         public String getDiagnosticInfo(){
@@ -24,21 +29,21 @@ public class TelemetryDiagnosticControls
         {
             diagnosticInfo = "";
 
-            telemetryClient.disconnect();
+            connect.disconnect();
     
             int retryLeft = 3;
-            while (telemetryClient.getOnlineStatus() == false && retryLeft > 0)
+            while (!connect.getOnlineStatus()  && retryLeft > 0)
             {
-                telemetryClient.connect(DiagnosticChannelConnectionString);
+                connect.connect(DiagnosticChannelConnectionString);
                 retryLeft -= 1;
             }
              
-            if(telemetryClient.getOnlineStatus() == false)
+            if(!connect.getOnlineStatus())
             {
                 throw new Exception("Unable to connect.");
             }
     
-            telemetryClient.send(TelemetryClient.DIAGNOSTIC_MESSAGE);
+            telemetryClient.send(telemetryClient.DIAGNOSTIC_MESSAGE);
             diagnosticInfo = telemetryClient.receive();
     }
 }

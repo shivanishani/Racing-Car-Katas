@@ -1,47 +1,28 @@
 package tddmicroexercises.telemetrysystem;
 
+
 import java.util.Random;
 
-public class TelemetryClient
+public class TelemetryClient implements TelemetryClientInterface
 {
-    public static final String DIAGNOSTIC_MESSAGE = "AT#UD";
+    private final Random connectionEventsSimulator;
 
-    private boolean onlineStatus;
     private String diagnosticMessageResult = "";
 
-    private final Random connectionEventsSimulator = new Random(42);
-
-    public boolean getOnlineStatus()
-    {
-        return onlineStatus; 
-    }
-
-    public void connect(String telemetryServerConnectionString)
-    {
-        if (telemetryServerConnectionString == null || "".equals(telemetryServerConnectionString))
-        {
-            throw new IllegalArgumentException();
-        }
-
-        // simulate the operation on a real modem
-        boolean success = connectionEventsSimulator.nextInt(10) <= 8;
-
-        onlineStatus = success;
-    }
-
-    public void disconnect()
-    {
-        onlineStatus = false;
+    public TelemetryClient(){
+         connectionEventsSimulator = new Random(42);
     }
 
     public void send(String message)
     {
-        if (message == null || "".equals(message))
+        if (message == null || message.isEmpty())
+                //"".equals(message))
         {
             throw new IllegalArgumentException();
         }
 
-        if (message == DIAGNOSTIC_MESSAGE)
+        //if (message == DIAGNOSTIC_MESSAGE)
+        if (DIAGNOSTIC_MESSAGE.equals(message))
         {
             // simulate a status report
             diagnosticMessageResult =
@@ -60,7 +41,7 @@ public class TelemetryClient
                 + "Local Rtrn Count............ 00\r\n"
                 + "Remote Rtrn Count........... 00";
 
-            return;
+            //return;
         }
 
         // here should go the real Send operation (not needed for this exercise)
@@ -68,26 +49,31 @@ public class TelemetryClient
 
     public String receive()
     {
-        String message;
+        //String message;
+        StringBuilder message = new StringBuilder();
 
-        if (diagnosticMessageResult == null || "".equals(diagnosticMessageResult))
+        if (diagnosticMessageResult == null || diagnosticMessageResult.isEmpty())
+                //"".equals(diagnosticMessageResult))
         {
             // simulate a received message (just for illustration - not needed for this exercise)
-            message = "";
+            // message = "";
+            message = new StringBuilder();
             int messageLength = connectionEventsSimulator.nextInt(50) + 60;
             for(int i = messageLength; i >=0; --i)
             {
-                message += (char)connectionEventsSimulator.nextInt(40) + 86;
+                //message += (char)connectionEventsSimulator.nextInt(40) + 86;
+                message.append((char)connectionEventsSimulator.nextInt(40) + 86);
             }
             
         } 
         else
         {                
-            message = diagnosticMessageResult;
+            //message = diagnosticMessageResult;
+            message.append(diagnosticMessageResult);
             diagnosticMessageResult = "";
         }
 
-        return message;
+        return message.toString();
     }
 }
 
